@@ -26,13 +26,16 @@ module SlackMessageResponder
   def self.leaderboard(params)
     data = params['text'].match(LEADERBOARD_REGEX)
     tournament = Tournament.first(name: data[:tournament])
-    list = User.all.map{ |u|
-      [ u.current_score_value(tournament),
-      u.slack_id]
-    }
+    response_text = tournament.leaders.inject('') do |memo, data|
+      position, slack_id, score = data
+      memo += "#{position} - <@#{slack_id}> - #{score}.\n"
+
+      memo
+    end
+
     JSON.generate({
       response_type: 'on_channel',
-      text: list,
+      text: response_text,
     })
   end
 
@@ -40,19 +43,9 @@ module SlackMessageResponder
     match_data = params['text'].match(ADD_MATCH_REGEX)
     MatchService.new(match_data).register_match_results
 
-    tournament = Tournament.first(name: match_data[:tournament])
-    list = User.all.map{ |u|
-      [ u.current_score_value(tournament),
-      u.slack_id]
-    }
-    return JSON.generate({
-      response_type: 'on_channel',
-      text: list,
-    })
-
     JSON.generate({
       response_type: 'ephemeral',
-      text: "Match registred",
+      text: "Ok. Match registerd and rankings updated.",
     })
   end
 end

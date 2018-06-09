@@ -12,6 +12,16 @@ class Tournament
   property :id,   Serial
   property :name, String
   has n, :matches
+  has n, :tournament_scores
+
+  def leaders
+    tournament_scores
+      .all(fields: [:user_id, :score, :id], order: [:id.desc])
+      .each_with_index
+      .map{ |ts, i|
+        [i+1, ts.user.slack_id, ts.score]
+      }.uniq{ |re| re[1] }
+  end
 end
 
 class Match
