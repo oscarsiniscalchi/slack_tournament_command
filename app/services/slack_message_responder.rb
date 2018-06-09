@@ -2,7 +2,6 @@ require 'json'
 
 module SlackMessageResponder
   ADD_MATCH_REGEX= /^(?<tournament>.*?)\s(<@(?<user_one_id>U.*?)\|(?<user_one_name>.*?)>\s(?<user_one_score>\d)\s)(<@(?<user_two_id>U.*?)\|(?<user_two_name>.*?)>\s(?<user_two_score>\d))/
-  LEADERBOARD_REGEX=/^lead.*?\s(?<tournament>.*?)$/
   ADD_MATCH_COMMAND_REGEX= /\/match/
   LEADERBOARD_COMMAND_REGEX=/\/leaderboard/
 
@@ -26,8 +25,8 @@ module SlackMessageResponder
   end
 
   def self.leaderboard(params)
-    data = params['text'].match(LEADERBOARD_REGEX)
-    tournament = Tournament.first(name: data[:tournament])
+    tournament_name = params['text']
+    tournament = Tournament.first(name: tournament_name)
     response_text = tournament.leaders.inject('') do |memo, data|
       position, slack_id, score = data
       memo += "#{position} - <@#{slack_id}> - #{score}.\n"
