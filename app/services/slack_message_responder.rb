@@ -3,15 +3,17 @@ require 'json'
 module SlackMessageResponder
   ADD_MATCH_REGEX= /^(?<tournament>.*?)\s(<@(?<user_one_id>U.*?)\|(?<user_one_name>.*?)>\s(?<user_one_score>\d)\s)(<@(?<user_two_id>U.*?)\|(?<user_two_name>.*?)>\s(?<user_two_score>\d))/
   LEADERBOARD_REGEX=/^lead.*?\s(?<tournament>.*?)$/
+  ADD_MATCH_COMMAND_REGEX= /\/match/
+  LEADERBOARD_COMMAND_REGEX=/\/leaderboard/
 
   def self.response(params)
-    action = recognize_action(params['text'])
+    action = recognize_action(params['command'])
     send(action, params)
   end
 
   def self.recognize_action(text)
-    return :leaderboard if text.match(LEADERBOARD_REGEX)
-    return :add_match if text.match(ADD_MATCH_REGEX)
+    return :leaderboard if text.match(LEADERBOARD_COMMAND_REGEX)
+    return :add_match if text.match(ADD_MATCH_COMMAND_REGEX)
 
     :unrecognized_response
   end
