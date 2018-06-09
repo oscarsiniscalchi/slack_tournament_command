@@ -12,8 +12,8 @@ class RankingService
 
     # Calculate Expected Score
 
-    e1 = tr1 / (tr1 + tr2)
-    e2 = tr2 / (tr1 + tr2)
+    e1 = tr1 / (tr1 + tr2).to_f
+    e2 = tr2 / (tr1 + tr2).to_f
 
     # Actual Score
 
@@ -25,7 +25,7 @@ class RankingService
     usv1 = r1 + (K * (s1 - e1))
     usv2 = r2 + (K * (s2 - e2))
 
-    match.user_one.tournament_scores.create(tournament: match.tournament, score: usv1)
-    match.user_two.tournament_scores.create(tournament: match.tournament, score: usv2)
+    match.user_one.tournament_scores.create(tournament: match.tournament, score: usv1.round)
+    match.user_two.tournament_scores.create(tournament: match.tournament, score: usv2.round)
   end
 end
