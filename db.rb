@@ -15,12 +15,12 @@ class Tournament
   has n, :tournament_scores
 
   def leaders
-    tournament_scores
+   tournament_scores
       .all(fields: [:user_id, :score, :id], order: [:id.desc])
-      .each_with_index
-      .map{ |ts, i|
-        [i+1, ts.user.slack_id, ts.score]
-      }.uniq{ |re| re[1] }
+     .map { |ts| [ts.user.slack_id, ts.score] }
+     .uniq { |a| a[0] }
+     .sort { |x,y| x[2] <=> y[2] }
+     .reverse
   end
 end
 

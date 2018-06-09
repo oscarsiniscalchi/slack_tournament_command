@@ -27,8 +27,10 @@ module SlackMessageResponder
   def self.leaderboard(params)
     tournament_name = params['text']
     tournament = Tournament.first(name: tournament_name)
+    position = 0
     response_text = tournament.leaders.inject('') do |memo, data|
-      position, slack_id, score = data
+      position += 1
+      slack_id, score = data
       memo += "#{position} - <@#{slack_id}> - #{score}.\n"
 
       memo
