@@ -4,7 +4,7 @@ require 'data_mapper'
 DataMapper::Logger.new($stdout, :debug)
 
 # A Postgres connection:
-DataMapper.setup(:default, 'postgres://postgres:@localhost/tournament')
+DataMapper.setup(:default, ENV['DATABASE_URL'])
 
 class Tournament
   include DataMapper::Resource
