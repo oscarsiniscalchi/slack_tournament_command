@@ -20,7 +20,7 @@ the ordered list of users based on their current ELO points for that tournament.
 
 ## TODO
 
-- Clean up code. Separate the single entry point to independent entry points (originally planed for a bot integration)
+- ~Clean up code. Separate the single entry point to independent entry points (originally planed for a bot integration)~
 - Make K factor configurable per tournament
 - Minimal web UX to list leaderboards per tournament
 - Achievements (background process that grant users trophies )

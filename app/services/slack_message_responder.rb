@@ -2,47 +2,56 @@ require 'json'
 
 module SlackMessageResponder
   ADD_MATCH_REGEX= /^(?<tournament>.*?)\s(<@(?<user_one_id>U.*?)\|(?<user_one_name>.*?)>\s(?<user_one_score>\d)\s)(<@(?<user_two_id>U.*?)\|(?<user_two_name>.*?)>\s(?<user_two_score>\d))/
-  ADD_MATCH_COMMAND_REGEX= /\/match/
-  LEADERBOARD_COMMAND_REGEX=/\/leaderboard/
 
-  def self.response(params)
-    action = recognize_action(params['command'])
-    send(action, params)
-  end
+  def self.error_response(error_message, additional_data = [])
+    attachments = additional_data.map { |att| { text: att } }
 
-  def self.recognize_action(text)
-    return :leaderboard if text.match(LEADERBOARD_COMMAND_REGEX)
-    return :add_match if text.match(ADD_MATCH_COMMAND_REGEX)
-
-    :unrecognized_response
-  end
-
-  def self.unrecognized_response(params)
     JSON.generate({
       response_type: 'ephemeral',
-      text: 'Oops! Not a valid command',
+      text: error_message,
+      attachments: attachments
     })
   end
 
   def self.leaderboard(params)
     tournament_name = params['text']
     tournament = Tournament.first(name: tournament_name)
+
+    return error_response(
+      "Woops! No such tournament #{tournament_name}",
+      ["You can register a match with `/match #{tournament_name}` <user_1> <score> <user_2> <score>"]
+    ) unless tournament
+
     position = 0
     response_text = tournament.leaders.inject('') do |memo, data|
       position += 1
       slack_id, score = data
-      memo += "#{position} - <@#{slack_id}> - #{score}.\n"
+      memo += "#{decorate_position(position)} - <@#{slack_id}> - #{score}.\n"
 
       memo
     end
 
     JSON.generate({
-      response_type: 'on_channel',
+      response_type: 'in_channel',
       text: response_text,
     })
   end
 
-  def self.add_match(params)
+  def self.decorate_position(position)
+    case position
+    when 1
+      ':first_place_medal:'
+    when 2
+      ':second_place_medal:'
+    when 3
+      ':third_place_medal:'
+    else
+      position
+    end
+
+  end
+
+  def self.register_match(params)
     match_data = params['text'].match(ADD_MATCH_REGEX)
     MatchService.new(match_data).register_match_results
 

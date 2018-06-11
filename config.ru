@@ -1,6 +1,5 @@
-require 'byebug'
+Bundler.require(:default)
 
-require 'dotenv'
 Dotenv.load
 
 require './app/services/match_service'

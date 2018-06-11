@@ -18,9 +18,14 @@ Cuba.define do
   end
 
   on post do
-    on 'slack_command' do
+    on 'leaderboard' do
       res.headers['Content-Type'] = 'application/json; charset=utf-8'
-      res.write SlackMessageResponder.response(req.params)
+      res.write SlackMessageResponder.leaderboard(req.params)
+    end
+
+    on 'register_match' do
+      res.headers['Content-Type'] = 'application/json; charset=utf-8'
+      res.write SlackMessageResponder.register_match(req.params)
     end
   end
 end
