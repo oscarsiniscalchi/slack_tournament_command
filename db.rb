@@ -19,7 +19,7 @@ class Tournament
       .all(fields: [:user_id, :score, :id], order: [:id.desc])
      .map { |ts| [ts.user.slack_id, ts.score] }
      .uniq { |a| a[0] }
-     .sort { |x,y| x[2] <=> y[2] }
+     .sort { |x,y| x[1] <=> y[1] }
      .reverse
   end
 end
