@@ -32,7 +32,7 @@ module SlackMessageResponder
     end
 
     JSON.generate({
-      response_type: 'in_channel',
+      response_type: 'ephemeral',
       text: response_text,
     })
   end
