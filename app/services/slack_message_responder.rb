@@ -23,10 +23,12 @@ module SlackMessageResponder
     ) unless tournament
 
     position = 0
-    response_text = tournament.leaders.inject('') do |memo, data|
+    leaders = tournament.leaders
+    total_leaders = leaders.count
+    response_text = leaders.inject('') do |memo, data|
       position += 1
       slack_id, score = data
-      memo += "#{decorate_position(position)} - <@#{slack_id}> - #{score}.\n"
+      memo += "#{decorate_position(position, total_leaders)} - <@#{slack_id}> - #{score}.\n"
 
       memo
     end
@@ -37,7 +39,7 @@ module SlackMessageResponder
     })
   end
 
-  def self.decorate_position(position)
+  def self.decorate_position(position, last_position)
     case position
     when 1
       ':first_place_medal:'
@@ -45,6 +47,8 @@ module SlackMessageResponder
       ':second_place_medal:'
     when 3
       ':third_place_medal:'
+    when last_position
+      ':poop:'
     else
       position
     end
